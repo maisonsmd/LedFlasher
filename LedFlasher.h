@@ -1,11 +1,9 @@
 #pragma once
 
-
 #ifndef LED_FLASHER_NOT_USE_VECTOR
 #include <ArduinoSTL.h>
 #include <vector>
 #include <algorithm>
-using namespace std;
 #endif
 
 uint32_t _always_on[] = { 1 };
@@ -20,7 +18,8 @@ uint32_t _always_off[] = { 0 };
 #define CFG_IS_ENABLED		3
 
 #define CFG_RAM_CLEANUP		4
-#define CFG_LAST_LED_STATE	5
+//#define CFG_LAST_LED_STATE	5
+//#define CFG_LAST_LED_STATE	5
 
 #define LED_ON	1
 #define LED_OFF	0
@@ -28,7 +27,7 @@ uint32_t _always_off[] = { 0 };
 class LedFlasher {
 private:
 #ifndef LED_FLASHER_NOT_USE_VECTOR
-	static vector<LedFlasher*> leds;
+	static std::vector<LedFlasher*> leds;
 #endif
 
 	uint8_t currentIndex = 0;
@@ -47,7 +46,6 @@ private:
 			else
 				digitalWrite(pin, !bitRead(config, CFG_ACTIVE_STATE));
 		}
-		bitWrite(config, CFG_LAST_LED_STATE, _state);
 	}
 
 public:
@@ -103,8 +101,6 @@ public:
 
 	void Enable(bool _enable) {
 		bitWrite(config, CFG_IS_ENABLED, _enable);
-		//SwitchLed(LED_OFF);
-		//currentIndex = 0;
 	}
 
 	void Loop(bool _loop) {
@@ -117,10 +113,13 @@ public:
 		if (patternMap == nullptr || length < 1)
 			return;
 		if (length == 1) {
-			if (patternMap[0] == 0)
-				SwitchLed(LED_OFF);
-			else
-				SwitchLed(LED_ON);
+			if (bitRead(config, CFG_PATTERN_CHANGED)) {
+				if (patternMap[0] == 0)
+					SwitchLed(LED_OFF);
+				else
+					SwitchLed(LED_ON);
+			}
+			bitClear(config, CFG_PATTERN_CHANGED);
 			return;
 		}
 
@@ -132,10 +131,12 @@ public:
 		if (!bitRead(config, CFG_IS_ENABLED))
 			return;
 
-		bitClear(config, CFG_PATTERN_CHANGED);
+		SwitchLed(currentIndex % 2 == 0);
 
-		bool lastState = bitRead(config, CFG_LAST_LED_STATE);
-		SwitchLed(!lastState);
+		nextSwitchMillis = currentMillis + patternMap[currentIndex];
+		//prevent overflowing
+		if (currentMillis > nextSwitchMillis)
+			nextSwitchMillis = currentMillis;
 
 		currentIndex++;
 		if (currentIndex >= length) {
@@ -144,11 +145,11 @@ public:
 				bitClear(config, CFG_IS_ENABLED);
 		}
 
-		nextSwitchMillis = currentMillis + patternMap[currentIndex];
+		bitClear(config, CFG_PATTERN_CHANGED);
 	}
 };
 
 #ifndef LED_FLASHER_NOT_USE_VECTOR
 //keep compiler happy
-vector<LedFlasher*> LedFlasher::leds;
+std::vector<LedFlasher*> LedFlasher::leds;
 #endif
