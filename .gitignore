@@ -3,3 +3,10 @@
 ################################################################################
 
 /.vs/LedFlasher/v15
+/Release
+/__vm
+/SmartPointer.h
+/LedFlasher.vcxproj.user
+/LedFlasher.vcxproj.filters
+/LedFlasher.vcxproj
+/LedFlasher.sln

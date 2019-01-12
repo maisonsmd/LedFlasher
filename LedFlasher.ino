@@ -1,4 +1,5 @@
-#define LED_FLASHER_NOT_USE_VECTOR
+//#define LED_FLASHER_USE_VECTOR
+
 #include "LedFlasher.h"
 LedFlasher NokiaSmsTune(13);
 LedFlasher NokiaSmsTune1(11);

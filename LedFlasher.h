@@ -1,6 +1,6 @@
 #pragma once
 
-#ifndef LED_FLASHER_NOT_USE_VECTOR
+#ifdef LED_FLASHER_USE_VECTOR
 #include <ArduinoSTL.h>
 #include <vector>
 #include <algorithm>
@@ -26,7 +26,7 @@ uint32_t _always_off[] = { 0 };
 
 class LedFlasher {
 private:
-#ifndef LED_FLASHER_NOT_USE_VECTOR
+#ifdef LED_FLASHER_USE_VECTOR
 	static std::vector<LedFlasher*> leds;
 #endif
 
@@ -50,7 +50,7 @@ private:
 
 public:
 
-#ifndef LED_FLASHER_NOT_USE_VECTOR
+#ifdef LED_FLASHER_USE_VECTOR
 	static void RunAll() {
 		for (auto led : leds) {
 			if (led == nullptr) {
@@ -69,7 +69,7 @@ public:
 		if (pin != -1)
 			pinMode(pin, OUTPUT);
 		bitWrite(config, CFG_ACTIVE_STATE, _activeState);
-	#ifndef LED_FLASHER_NOT_USE_VECTOR
+	#ifdef LED_FLASHER_USE_VECTOR
 		leds.push_back(this);
 	#endif
 	}
@@ -78,7 +78,7 @@ public:
 			delete[] patternMap;
 		}
 
-	#ifndef LED_FLASHER_NOT_USE_VECTOR
+	#ifdef LED_FLASHER_USE_VECTOR
 		leds.erase(std::remove(leds.begin(), leds.end(), this), leds.end());
 	#endif
 	}
@@ -149,7 +149,7 @@ public:
 	}
 };
 
-#ifndef LED_FLASHER_NOT_USE_VECTOR
+#ifdef LED_FLASHER_USE_VECTOR
 //keep compiler happy
 std::vector<LedFlasher*> LedFlasher::leds;
 #endif
