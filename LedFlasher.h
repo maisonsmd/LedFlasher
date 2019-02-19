@@ -55,7 +55,8 @@ public:
 		for (auto led : leds) {
 			if (led == nullptr) {
 				leds.erase(std::remove(leds.begin(), leds.end(), led), leds.end());
-			} else
+			}
+			else
 				led->Run();
 		}
 	}
@@ -69,18 +70,18 @@ public:
 		if (pin != -1)
 			pinMode(pin, OUTPUT);
 		bitWrite(config, CFG_ACTIVE_STATE, _activeState);
-	#ifdef LED_FLASHER_USE_VECTOR
+#ifdef LED_FLASHER_USE_VECTOR
 		leds.push_back(this);
-	#endif
+#endif
 	}
 	~LedFlasher() {
-		if (bitRead(config, CFG_RAM_CLEANUP) && patternMap != nullptr) {
+		if (bitRead(config, CFG_RAM_CLEANUP) && patternMap != nullptr)
 			delete[] patternMap;
-		}
 
-	#ifdef LED_FLASHER_USE_VECTOR
-		leds.erase(std::remove(leds.begin(), leds.end(), this), leds.end());
-	#endif
+#ifdef LED_FLASHER_USE_VECTOR
+		if (!leds.empty())
+			leds.erase(std::remove(leds.begin(), leds.end(), this), leds.end());
+#endif
 	}
 
 	void SetPattern(uint32_t * _pattern, uint8_t _length, bool _loop = true, bool _deleteLastMap = false) {
