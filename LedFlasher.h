@@ -85,6 +85,9 @@ public:
 	}
 
 	void SetPattern(uint32_t * _pattern, uint8_t _length, bool _loop = true, bool _deleteLastMap = false) {
+		if (_pattern == patternMap)
+			return;
+		
 		if (_deleteLastMap && patternMap != nullptr) {
 			delete[] patternMap;
 		}
